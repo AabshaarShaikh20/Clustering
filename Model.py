@@ -10,7 +10,7 @@ def add_background():
         <style>
         /* Background Image */
         .stApp {
-            background: url("https://thumbs.dreamstime.com/b/intersection-money-global-economy-shaping-financial-landscapes-worldwide-intersection-money-global-economy-292671686.jpg" no-repeat center center fixed; 
+            background: url("https://thumbs.dreamstime.com/b/intersection-money-global-economy-shaping-financial-landscapes-worldwide-intersection-money-global-economy-292671686.jpg") no-repeat center center fixed; 
             background-size: cover;
         }
         /* Text Styling */
