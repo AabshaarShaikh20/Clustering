@@ -57,6 +57,18 @@ Use this tool to explore patterns in global development!
 st.sidebar.header('User Input')
 cluster = st.sidebar.selectbox('Select a Cluster:', range(5), format_func=lambda x: f'Cluster {x + 1}')
 
+# Display the Cluster Color Legend in the sidebar
+st.sidebar.subheader('Cluster Color Legend')
+legend_info = {
+    0: 'Strong economic development and high life expectancy (Blue)',
+    1: 'Moderate economic development and medium life expectancy (Orange)',
+    2: 'Weak economic development and low life expectancy (Green)',
+    3: 'Unique development profiles (Red)',
+    4: 'Other development profiles (Purple)'
+}
+for i, desc in legend_info.items():
+    st.sidebar.write(f'* **Cluster {i + 1}**: {desc}')
+
 # Display cluster details
 st.subheader(f'Details for Cluster {cluster + 1}')
 cluster_data = df[kmeans.labels_ == cluster]
@@ -80,20 +92,13 @@ fig, ax = plt.subplots()
 selected_cluster_data = df[kmeans.labels_ == cluster]
 ax.scatter(selected_cluster_data.iloc[:, 0], selected_cluster_data.iloc[:, 1], c='black', label=f'Selected Cluster {cluster + 1}', edgecolor='white')
 
+# Add label to show that black dots are for the selected cluster
+ax.text(
+    0.5, 0.95, 'Black Dots Represent Selected Cluster', 
+    ha='center', va='center', transform=ax.transAxes, color='white', fontsize=12, fontweight='bold'
+)
+
 ax.set_xlabel('GDP')
 ax.set_ylabel('CO2 Emissions')
 ax.legend()
 st.pyplot(fig)
-
-# Color legend for clusters
-st.write("### Cluster Color Legend")
-legend_info = {
-    0: 'Strong economic development and high life expectancy',
-    1: 'Moderate economic development and medium life expectancy',
-    2: 'Weak economic development and low life expectancy',
-    3: 'Unique development profiles',
-    4: 'Other development profiles'
-}
-
-for i, desc in legend_info.items():
-    st.write(f'* **Cluster {i + 1}** ({colors[i].capitalize()}): {desc}')
