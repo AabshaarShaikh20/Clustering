@@ -72,12 +72,14 @@ ax.set_xlabel('GDP')
 ax.set_ylabel('CO2 Emissions')
 st.pyplot(fig)
 
-# Visualizing the focused view of the selected cluster
+# Visualizing the focused view of the selected cluster (only black dots for the selected cluster)
 st.write(f"### Focused View of Cluster {cluster + 1}")
 fig, ax = plt.subplots()
-ax.scatter(df.iloc[:, 0], df.iloc[:, 1], c=[colors[i] for i in kmeans.labels_], alpha=0.7, edgecolor='k')  # All clusters shown
-cluster_data = df[kmeans.labels_ == cluster]
-ax.scatter(cluster_data.iloc[:, 0], cluster_data.iloc[:, 1], c='black', label=f'Selected Cluster {cluster + 1}', edgecolor='white')
+
+# Show only the selected cluster in black
+selected_cluster_data = df[kmeans.labels_ == cluster]
+ax.scatter(selected_cluster_data.iloc[:, 0], selected_cluster_data.iloc[:, 1], c='black', label=f'Selected Cluster {cluster + 1}', edgecolor='white')
+
 ax.set_xlabel('GDP')
 ax.set_ylabel('CO2 Emissions')
 ax.legend()
