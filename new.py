@@ -22,19 +22,8 @@ def add_background():
             color: white;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
         }}
-        /* Sidebar Styling */
         .stSidebar {{
-            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent sidebar background */
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-        }}
-        /* Main Content Styling */
-        .main {{
-            background-color: rgba(0, 0, 0, 0.6);  /* Semi-transparent background for main content */
-            padding: 20px;
-            border-radius: 10px;
-            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
         }}
         .css-1p1n3ar {{
             color: white;
@@ -57,7 +46,7 @@ df = df.applymap(lambda x: str(x).replace('%', ''))
 df = df.apply(pd.to_numeric, errors='coerce')
 
 # Streamlit app title and description
-st.markdown('<p class="main"><h1>🌍 Global Development Clustering App 🌍</h1></p>', unsafe_allow_html=True)
+st.title('🌍 Global Development Clustering App 🌍')
 st.markdown("""
 This app uses **KMeans clustering** to analyze and group countries based on development metrics, 
 such as GDP, CO2 emissions, and life expectancy.  
@@ -65,23 +54,29 @@ Use this tool to explore patterns in global development!
 """)
 
 # Sidebar for user interaction
-st.sidebar.markdown('<p class="sidebar"><h3>Controls</h3></p>', unsafe_allow_html=True)
-st.sidebar.write("Use this tool to explore different clusters and their characteristics.")
-
-# Cluster selection in the sidebar
+st.sidebar.header('User Input')
 cluster = st.sidebar.selectbox('Select a Cluster:', range(5), format_func=lambda x: f'Cluster {x + 1}')
 
 # Display cluster details
-st.markdown('<p class="main"><h3>Details for Cluster {}</h3></p>'.format(cluster + 1), unsafe_allow_html=True)
+st.subheader(f'Details for Cluster {cluster + 1}')
 cluster_data = df[kmeans.labels_ == cluster]
 st.write("### Key Characteristics")
 st.write(cluster_data.describe())
 
-# Plot cluster data
-st.write("### Visualizing Clusters")
+# Visualizing all clusters with common scatter plot
+st.write("### Visualizing All Clusters")
 fig, ax = plt.subplots()
 colors = ['blue', 'orange', 'green', 'red', 'purple']
 scatter = ax.scatter(df.iloc[:, 0], df.iloc[:, 1], c=[colors[i] for i in kmeans.labels_], alpha=0.7, edgecolor='k')
+ax.set_xlabel('GDP')
+ax.set_ylabel('CO2 Emissions')
+st.pyplot(fig)
+
+# Visualizing the focused view of the selected cluster
+st.write(f"### Focused View of Cluster {cluster + 1}")
+fig, ax = plt.subplots()
+ax.scatter(df.iloc[:, 0], df.iloc[:, 1], c=[colors[i] for i in kmeans.labels_], alpha=0.7, edgecolor='k')  # All clusters shown
+cluster_data = df[kmeans.labels_ == cluster]
 ax.scatter(cluster_data.iloc[:, 0], cluster_data.iloc[:, 1], c='black', label=f'Selected Cluster {cluster + 1}', edgecolor='white')
 ax.set_xlabel('GDP')
 ax.set_ylabel('CO2 Emissions')
@@ -89,7 +84,7 @@ ax.legend()
 st.pyplot(fig)
 
 # Color legend for clusters
-st.markdown('<p class="main"><h4>Cluster Color Legend:</h4></p>', unsafe_allow_html=True)
+st.write("### Cluster Color Legend")
 legend_info = {
     0: 'Strong economic development and high life expectancy',
     1: 'Moderate economic development and medium life expectancy',
