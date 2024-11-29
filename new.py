@@ -15,7 +15,7 @@ df = pd.read_csv('./World_development_mesurement.csv')
 df = df.applymap(lambda x: str(x).replace('%', ''))
 df = df.apply(pd.to_numeric, errors='coerce')
 
-# Set background image using HTML
+# Set background image using HTML with an overlay for better visibility
 st.markdown("""
     <style>
         .stApp {
@@ -23,24 +23,35 @@ st.markdown("""
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
+        }
+        .main {
+            background-color: rgba(0, 0, 0, 0.6);  /* Semi-transparent background for text */
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+        }
+        .sidebar {
+            background-color: rgba(0, 0, 0, 0.7);  /* Dark background for sidebar */
+            padding: 20px;
+            border-radius: 10px;
             color: white;
         }
     </style>
     """, unsafe_allow_html=True)
 
-# Streamlit app title and description
-st.title('Clustering App')
-st.write('This app uses KMeans clustering to group countries based on their development metrics.')
+# Streamlit app title and description with white text to stand out
+st.markdown('<p class="main"><h1>Clustering App</h1></p>', unsafe_allow_html=True)
+st.markdown('<p class="main">This app uses KMeans clustering to group countries based on their development metrics.</p>', unsafe_allow_html=True)
 
 # Left Sidebar for user input controls
-st.sidebar.title("Controls")
+st.sidebar.markdown('<p class="sidebar"><h3>Controls</h3></p>', unsafe_allow_html=True)
 st.sidebar.write("Use the options below to filter and view the results.")
 
 # Cluster selection in the sidebar
 cluster = st.sidebar.selectbox('Select a cluster to view its characteristics:', range(5))
 
 # Display characteristics of the selected cluster in the main area
-st.write(f'### Cluster {cluster} Characteristics:')
+st.markdown('<p class="main"><h3>Cluster {}</h3></p>'.format(cluster), unsafe_allow_html=True)
 st.write(df[kmeans.labels_ == cluster].describe())
 
 # Create a placeholder for the plot
@@ -67,11 +78,9 @@ with plot_placeholder.container():
     st.pyplot(fig)
 
 # Explanation for the cluster colors on the sidebar
-st.sidebar.write('### Cluster Color Legend:')
+st.sidebar.markdown('<p class="sidebar"><h4>Cluster Color Legend:</h4></p>', unsafe_allow_html=True)
 st.sidebar.write('* Cluster 0 (Blue): Strong economic development and high life expectancy')
 st.sidebar.write('* Cluster 1 (Orange): Moderate economic development and medium life expectancy')
 st.sidebar.write('* Cluster 2 (Green): Weak economic development and low life expectancy')
 st.sidebar.write('* Cluster 3 (Red): Unique development profiles')
 st.sidebar.write('* Cluster 4 (Purple): Other development profiles')
-
-# Additional information can also go here on the sidebar, such as data sources or methodology.
