@@ -31,12 +31,20 @@ st.write(df[kmeans.labels_ == cluster].describe())
 # Create a placeholder for the plot
 plot_placeholder = st.empty()
 
-# Only show the selected cluster
+# Main scatter plot showing all clusters
 with plot_placeholder.container():
-    # Filter the data to show only the selected cluster
+    # Create the main scatter plot showing all clusters
+    fig, ax = plt.subplots()
+    colors = ['blue', 'orange', 'green', 'red', 'purple']
+    scatter = ax.scatter(df.iloc[:, 0], df.iloc[:, 1], c=[colors[i] for i in kmeans.labels_])
+    ax.set_xlabel('Feature 1 - GDP')
+    ax.set_ylabel('Feature 2 - CO2 Emissions')
+    plt.colorbar(scatter)
+    st.pyplot(fig)
+
+    # Focused scatter plot showing only the selected cluster
+    st.write(f"Displaying data for Cluster {cluster}")
     df_cluster = df[kmeans.labels_ == cluster]
-    
-    # Create a scatter plot for the selected cluster
     fig, ax = plt.subplots()
     scatter = ax.scatter(df_cluster.iloc[:, 0], df_cluster.iloc[:, 1], c='black')
     ax.set_xlabel('Feature 1 - GDP')
