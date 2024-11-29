@@ -40,48 +40,59 @@ add_background()
 
 # Streamlit Title and Description
 st.title("K-Means Clustering Deployment")
-st.write("Upload your data and observe how the K-Means clustering model assigns data points to different clusters.")
+st.write("Explore K-Means clustering on a predefined dataset.")
 
-# File upload functionality
-uploaded_file = st.file_uploader("Upload CSV File", type=["csv"])
+# Load the pre-trained KMeans model
+with open('./kmeans_model.pkl', 'rb') as f:
+    kmeans = pickle.load(f)
 
-if uploaded_file is not None:
-    # Load the data
-    df = pd.read_csv(uploaded_file)
-    st.write("Data Preview:")
-    st.dataframe(df.head())
+# Predefined Data (Example)
+# You can replace this with any static data
+data = {
+    'Feature_1': [1.2, 3.4, 2.2, 4.5, 5.0, 6.7, 7.8, 3.3],
+    'Feature_2': [3.1, 2.3, 5.1, 4.3, 1.0, 3.3, 2.0, 7.4],
+    'Feature_3': [2.5, 3.0, 4.5, 5.1, 2.9, 3.2, 3.3, 2.4]
+}
 
-    # Select features for clustering (ensure the columns selected are numeric)
-    st.write("Select the features to use for clustering:")
-    features = st.multiselect("Features", options=df.columns.tolist(), default=df.columns.tolist())
+# Convert to DataFrame
+df = pd.DataFrame(data)
 
-    # Check if the user selected any columns
-    if len(features) > 0:
-        # Preprocess the data
-        data = df[features]
+# Show the static data to the user
+st.write("Data Preview:")
+st.dataframe(df)
 
-        # Standardizing the data
-        scaler = StandardScaler()
-        scaled_data = scaler.fit_transform(data)
+# Select features for clustering (ensure the columns selected are numeric)
+st.write("Select the features to use for clustering:")
+features = st.multiselect("Features", options=df.columns.tolist(), default=df.columns.tolist())
 
-        # Make predictions using the pre-trained K-Means model
-        clusters = kmeans.predict(scaled_data)
+# Check if the user selected any columns
+if len(features) > 0:
+    # Preprocess the data
+    selected_data = df[features]
 
-        # Add the predicted clusters to the dataframe
-        df['Cluster'] = clusters
+    # Standardizing the data
+    scaler = StandardScaler()
+    scaled_data = scaler.fit_transform(selected_data)
 
-        # Display the results with clusters
-        st.write("Clustering Results:")
-        st.dataframe(df)
+    # Make predictions using the pre-trained K-Means model
+    clusters = kmeans.predict(scaled_data)
 
-        # Plot the clusters
-        st.write("Cluster Visualization:")
-        plt.figure(figsize=(8, 6))
-        sns.scatterplot(x=scaled_data[:, 0], y=scaled_data[:, 1], hue=clusters, palette='viridis', s=100, edgecolor='black')
-        plt.title('K-Means Clustering Results')
-        plt.xlabel(features[0])
-        plt.ylabel(features[1])
-        st.pyplot()
+    # Add the predicted clusters to the dataframe
+    df['Cluster'] = clusters
+
+    # Display the results with clusters
+    st.write("Clustering Results:")
+    st.dataframe(df)
+
+    # Plot the clusters
+    st.write("Cluster Visualization:")
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(x=scaled_data[:, 0], y=scaled_data[:, 1], hue=clusters, palette='viridis', s=100, edgecolor='black')
+    plt.title('K-Means Clustering Results')
+    plt.xlabel(features[0])
+    plt.ylabel(features[1])
+    st.pyplot()
 
 else:
-    st.write("Please upload a CSV file to get started.")
+    st.write("Please select the features to use for clustering.")
+
