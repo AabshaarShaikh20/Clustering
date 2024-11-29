@@ -1,39 +1,87 @@
-#  we need to Import all the necessary libraries for data analysis
+import streamlit as st
 import pandas as pd
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import LabelEncoder
-from sklearn.impute import SimpleImputer
 import pickle
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.preprocessing import StandardScaler
 
-# Now loading our dataset 
-df = pd.read_csv('World_development_mesurement.csv')
+# Custom CSS for background and styling
+def add_background():
+    st.markdown(
+        f"""
+        <style>
+        /* Background Image */
+        .stApp {{
+            background: url("https://thumbs.dreamstime.com/b/intersection-money-global-economy-shaping-financial-landscapes-worldwide-intersection-money-global-economy-292671686.jpg") no-repeat center center fixed; 
+            background-size: cover;
+        }}
+        /* Text Styling */
+        h1, h2, h3, h4, h5, h6 {{
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }}
+        p, label, .stMarkdown {{
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }}
+        .stSidebar {{
+            background-color: rgba(0, 0, 0, 0.7);
+        }}
+        .css-1p1n3ar {{
+            color: white;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-# Now, need to find columns with non-numerical data (like words or text)
-categorical_cols = df.select_dtypes(include=['object']).columns
+# Apply the background CSS
+add_background()
 
-# Here we need to Convert non-numerical data into numbers
-le = LabelEncoder()
-for col in categorical_cols:
-    df[col] = le.fit_transform(df[col])
+# Streamlit Title and Description
+st.title("K-Means Clustering Deployment")
+st.write("Upload your data and observe how the K-Means clustering model assigns data points to different clusters.")
 
-# Removing the symbols (percentage signs) and convert to decimal numbers
-for col in df.columns:
-    if df[col].dtype == 'object':
-        try:
-            df[col] = df[col].str.replace('%', '').astype('float') / 100
-        except ValueError:
-            pass
+# File upload functionality
+uploaded_file = st.file_uploader("Upload CSV File", type=["csv"])
 
-# Now, we need to fill the missing values with average numbers
-imputer = SimpleImputer(strategy='mean')
-df = pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
+if uploaded_file is not None:
+    # Load the data
+    df = pd.read_csv(uploaded_file)
+    st.write("Data Preview:")
+    st.dataframe(df.head())
 
-# Create a clustering model with 5 groups (to group similar countries together)
-kmeans = KMeans(n_clusters=5, n_init='auto')
+    # Select features for clustering (ensure the columns selected are numeric)
+    st.write("Select the features to use for clustering:")
+    features = st.multiselect("Features", options=df.columns.tolist(), default=df.columns.tolist())
 
-# Now, we will Train the clustering model on our data so it can learn the patterns
-kmeans.fit(df)
+    # Check if the user selected any columns
+    if len(features) > 0:
+        # Preprocess the data
+        data = df[features]
 
-# Here we need to Save the trained model, in pickel file so that we can use it later.
-with open('kmeans_model.pkl', 'wb') as f:
-    pickle.dump(kmeans, f)
+        # Standardizing the data
+        scaler = StandardScaler()
+        scaled_data = scaler.fit_transform(data)
+
+        # Make predictions using the pre-trained K-Means model
+        clusters = kmeans.predict(scaled_data)
+
+        # Add the predicted clusters to the dataframe
+        df['Cluster'] = clusters
+
+        # Display the results with clusters
+        st.write("Clustering Results:")
+        st.dataframe(df)
+
+        # Plot the clusters
+        st.write("Cluster Visualization:")
+        plt.figure(figsize=(8, 6))
+        sns.scatterplot(x=scaled_data[:, 0], y=scaled_data[:, 1], hue=clusters, palette='viridis', s=100, edgecolor='black')
+        plt.title('K-Means Clustering Results')
+        plt.xlabel(features[0])
+        plt.ylabel(features[1])
+        st.pyplot()
+
+else:
+    st.write("Please upload a CSV file to get started.")
