@@ -6,20 +6,28 @@ import matplotlib.pyplot as plt
 # Custom CSS for background and styling
 def add_background():
     st.markdown(
-        """
+        f"""
         <style>
         /* Background Image */
-        .stApp {
+        .stApp {{
             background: url("https://thumbs.dreamstime.com/b/intersection-money-global-economy-shaping-financial-landscapes-worldwide-intersection-money-global-economy-292671686.jpg") no-repeat center center fixed; 
             background-size: cover;
-        }
+        }}
         /* Text Styling */
-        h1, h2, h3, h4, h5, h6 {
+        h1, h2, h3, h4, h5, h6 {{
             color: white;
-        }
-        .stSidebar {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }}
+        p, label, .stMarkdown {{
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }}
+        .stSidebar {{
             background-color: rgba(0, 0, 0, 0.7);
-        }
+        }}
+        .css-1p1n3ar {{
+            color: white;
+        }}
         </style>
         """,
         unsafe_allow_html=True
