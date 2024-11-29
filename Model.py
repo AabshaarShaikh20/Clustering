@@ -13,30 +13,22 @@ def add_background():
             background: url("https://thumbs.dreamstime.com/b/intersection-money-global-economy-shaping-financial-landscapes-worldwide-intersection-money-global-economy-292671686.jpg") no-repeat center center fixed; 
             background-size: cover;
         }}
-        /* Styling for text and boxes */
-        h1, h2, h3, h4, h5, h6 {{
+        /* Styling for text */
+        h1, h2, h3 {{
             color: white;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
         }}
-        p, label, .stMarkdown {{
+        p, label {{
             color: white;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
-        }}
-        .stSidebar {{
-            background-color: rgba(0, 0, 0, 0.7);
-        }}
-        .info-box {{
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
-            margin-bottom: 15px;
         }}
         ul {{
             padding-left: 20px;
         }}
         li {{
             font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
         }}
         </style>
         """,
@@ -67,20 +59,13 @@ Use this tool to explore patterns in global development!
 st.sidebar.header('User Input')
 cluster = st.sidebar.selectbox('Select a Cluster:', range(5), format_func=lambda x: f'Cluster {x + 1}')
 
-# Display cluster details in a styled box
-st.markdown(f"""
-<div class="info-box">
-    <h3>Details for Cluster {cluster + 1}</h3>
-    <p>Explore the characteristics of countries in this cluster.</p>
-</div>
-""", unsafe_allow_html=True)
-
+# Display details of the selected cluster
+st.markdown(f"### Details for Cluster {cluster + 1}")
 cluster_data = df[kmeans.labels_ == cluster]
-st.write("### Key Characteristics")
 st.write(cluster_data.describe())
 
 # Plot cluster data
-st.write("### Visualizing Clusters")
+st.markdown("### Visualizing Clusters")
 fig, ax = plt.subplots()
 colors = ['blue', 'orange', 'green', 'red', 'purple']
 scatter = ax.scatter(df.iloc[:, 0], df.iloc[:, 1], c=[colors[i] for i in kmeans.labels_], alpha=0.7, edgecolor='k')
@@ -90,17 +75,12 @@ ax.set_ylabel('CO2 Emissions')
 ax.legend()
 st.pyplot(fig)
 
-# Display the Cluster Color Legend in a styled box
-legend_html = """
-<div class="info-box">
-    <h3>Cluster Color Legend</h3>
-    <ul>
-        <li><b>Cluster 1 (Blue):</b> Strong economic development and high life expectancy</li>
-        <li><b>Cluster 2 (Orange):</b> Moderate economic development and medium life expectancy</li>
-        <li><b>Cluster 3 (Green):</b> Weak economic development and low life expectancy</li>
-        <li><b>Cluster 4 (Red):</b> Unique development profiles</li>
-        <li><b>Cluster 5 (Purple):</b> Other development profiles</li>
-    </ul>
-</div>
-"""
-st.markdown(legend_html, unsafe_allow_html=True)
+# Display the Cluster Color Legend without textbox
+st.markdown("### Cluster Color Legend")
+st.markdown("""
+- **Cluster 1 (Blue):** Strong economic development and high life expectancy  
+- **Cluster 2 (Orange):** Moderate economic development and medium life expectancy  
+- **Cluster 3 (Green):** Weak economic development and low life expectancy  
+- **Cluster 4 (Red):** Unique development profiles  
+- **Cluster 5 (Purple):** Other development profiles  
+""")
