@@ -3,6 +3,31 @@ import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
 
+# Custom CSS for background and styling
+def add_background():
+    st.markdown(
+        """
+        <style>
+        /* Background Image */
+        .stApp {
+            background: url("https://source.unsplash.com/1920x1080/?global,earth,development") no-repeat center center fixed; 
+            background-size: cover;
+        }
+        /* Text Styling */
+        h1, h2, h3, h4, h5, h6 {
+            color: white;
+        }
+        .stSidebar {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+# Apply the background CSS
+add_background()
+
 # Load the pre-trained KMeans model
 with open('./kmeans_model.pkl', 'rb') as f:
     kmeans = pickle.load(f)
@@ -13,7 +38,7 @@ df = df.applymap(lambda x: str(x).replace('%', ''))
 df = df.apply(pd.to_numeric, errors='coerce')
 
 # Streamlit app title and description
-st.title('Global Development Clustering App 🌍')
+st.title('🌍 Global Development Clustering App 🌍')
 st.markdown("""
 This app uses **KMeans clustering** to analyze and group countries based on development metrics, 
 such as GDP, CO2 emissions, and life expectancy.  
