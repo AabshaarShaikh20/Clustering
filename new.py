@@ -15,6 +15,19 @@ df = pd.read_csv('./World_development_mesurement.csv')
 df = df.applymap(lambda x: str(x).replace('%', ''))
 df = df.apply(pd.to_numeric, errors='coerce')
 
+# Set background image using HTML
+st.markdown("""
+    <style>
+        .stApp {
+            background-image: url('https://thumbs.dreamstime.com/b/intersection-money-global-economy-shaping-financial-landscapes-worldwide-intersection-money-global-economy-292671686.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            color: white;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
 # Streamlit app title and description
 st.title('Clustering App')
 st.write('This app uses KMeans clustering to group countries based on their development metrics.')
