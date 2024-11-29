@@ -1,39 +1,55 @@
-#  we need to Import all the necessary libraries for data analysis
+import streamlit as st
 import pandas as pd
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import LabelEncoder
-from sklearn.impute import SimpleImputer
 import pickle
+import matplotlib.pyplot as plt
 
-# Now loading our dataset 
-df = pd.read_csv('World_development_mesurement.csv')
+# Load the pre-trained KMeans model
+with open('./kmeans_model.pkl', 'rb') as f:
+    kmeans = pickle.load(f)
 
-# Now, need to find columns with non-numerical data (like words or text)
-categorical_cols = df.select_dtypes(include=['object']).columns
+# Load and clean the dataset
+df = pd.read_csv('./World_development_mesurement.csv')
+df = df.applymap(lambda x: str(x).replace('%', ''))
+df = df.apply(pd.to_numeric, errors='coerce')
 
-# Here we need to Convert non-numerical data into numbers
-le = LabelEncoder()
-for col in categorical_cols:
-    df[col] = le.fit_transform(df[col])
+# Streamlit app title and description
+st.title('Global Development Clustering App 🌍')
+st.markdown("""
+This app uses **KMeans clustering** to analyze and group countries based on development metrics, 
+such as GDP, CO2 emissions, and life expectancy.  
+Use this tool to explore patterns in global development!
+""")
 
-# Removing the symbols (percentage signs) and convert to decimal numbers
-for col in df.columns:
-    if df[col].dtype == 'object':
-        try:
-            df[col] = df[col].str.replace('%', '').astype('float') / 100
-        except ValueError:
-            pass
+# Sidebar for user interaction
+st.sidebar.header('User Input')
+cluster = st.sidebar.selectbox('Select a Cluster:', range(5), format_func=lambda x: f'Cluster {x + 1}')
 
-# Now, we need to fill the missing values with average numbers
-imputer = SimpleImputer(strategy='mean')
-df = pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
+# Display cluster details
+st.subheader(f'Details for Cluster {cluster + 1}')
+cluster_data = df[kmeans.labels_ == cluster]
+st.write("### Key Characteristics")
+st.write(cluster_data.describe())
 
-# Create a clustering model with 5 groups (to group similar countries together)
-kmeans = KMeans(n_clusters=5, n_init='auto')
+# Plot cluster data
+st.write("### Visualizing Clusters")
+fig, ax = plt.subplots()
+colors = ['blue', 'orange', 'green', 'red', 'purple']
+scatter = ax.scatter(df.iloc[:, 0], df.iloc[:, 1], c=[colors[i] for i in kmeans.labels_], alpha=0.7, edgecolor='k')
+ax.scatter(cluster_data.iloc[:, 0], cluster_data.iloc[:, 1], c='black', label=f'Selected Cluster {cluster + 1}', edgecolor='white')
+ax.set_xlabel('GDP')
+ax.set_ylabel('CO2 Emissions')
+ax.legend()
+st.pyplot(fig)
 
-# Now, we will Train the clustering model on our data so it can learn the patterns
-kmeans.fit(df)
+# Color legend for clusters
+st.write("### Cluster Color Legend")
+legend_info = {
+    0: 'Strong economic development and high life expectancy',
+    1: 'Moderate economic development and medium life expectancy',
+    2: 'Weak economic development and low life expectancy',
+    3: 'Unique development profiles',
+    4: 'Other development profiles'
+}
 
-# Here we need to Save the trained model, in pickel file so that we can use it later.
-with open('kmeans_model.pkl', 'wb') as f:
-    pickle.dump(kmeans, f)
+for i, desc in legend_info.items():
+    st.write(f'* **Cluster {i + 1}** ({colors[i].capitalize()}): {desc}')
