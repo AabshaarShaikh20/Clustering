@@ -32,13 +32,15 @@ st.markdown("""
 st.title('Clustering App')
 st.write('This app uses KMeans clustering to group countries based on their development metrics.')
 
-# Select a cluster to view its characteristics
-st.write('Select a cluster to view its characteristics:')
-cluster = st.selectbox('Cluster', range(5))
+# Left Sidebar for user input controls
+st.sidebar.title("Controls")
+st.sidebar.write("Use the options below to filter and view the results.")
 
-# Show characteristics of the selected cluster
-st.write('Cluster', cluster)
-st.write('Characteristics:')
+# Cluster selection in the sidebar
+cluster = st.sidebar.selectbox('Select a cluster to view its characteristics:', range(5))
+
+# Display characteristics of the selected cluster in the main area
+st.write(f'### Cluster {cluster} Characteristics:')
 st.write(df[kmeans.labels_ == cluster].describe())
 
 # Create a placeholder for the plot
@@ -64,10 +66,12 @@ with plot_placeholder.container():
     ax.set_ylabel('Feature 2 - CO2 Emissions')
     st.pyplot(fig)
 
-# Explanation for the cluster colors
-st.write('Color Legend:')
-st.write('* Cluster 0 (Blue): Strong economic development and high life expectancy')
-st.write('* Cluster 1 (Orange): Moderate economic development and medium life expectancy')
-st.write('* Cluster 2 (Green): Weak economic development and low life expectancy')
-st.write('* Cluster 3 (Red): Unique development profiles')
-st.write('* Cluster 4 (Purple): Other development profiles')
+# Explanation for the cluster colors on the sidebar
+st.sidebar.write('### Cluster Color Legend:')
+st.sidebar.write('* Cluster 0 (Blue): Strong economic development and high life expectancy')
+st.sidebar.write('* Cluster 1 (Orange): Moderate economic development and medium life expectancy')
+st.sidebar.write('* Cluster 2 (Green): Weak economic development and low life expectancy')
+st.sidebar.write('* Cluster 3 (Red): Unique development profiles')
+st.sidebar.write('* Cluster 4 (Purple): Other development profiles')
+
+# Additional information can also go here on the sidebar, such as data sources or methodology.
