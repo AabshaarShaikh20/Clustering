@@ -1,89 +1,100 @@
 import streamlit as st
 import pandas as pd
 import pickle
-import seaborn as sns
 import matplotlib.pyplot as plt
-import numpy as np
+import seaborn as sns
 
-# Load the KMeans model
+# Load the trained KMeans model
 with open('./kmeans_model.pkl', 'rb') as file:
     kmeans = pickle.load(file)
 
-# Load and preprocess the dataset
+# Load and clean the dataset
 df = pd.read_csv('./World_development_mesurement.csv')
 df = df.applymap(lambda x: str(x).replace('%', ''))
 df = df.apply(pd.to_numeric, errors='coerce')
 
-# Streamlit app header
-st.title("Clustering Global Development 🌐")
-st.markdown("""
-Explore global development patterns by clustering countries based on key metrics like GDP, CO2 emissions, and more.  
-Dive into insights about economic and environmental trends across clusters!
+# Add cluster labels to the dataframe for better usability
+df['Cluster'] = kmeans.labels_
+
+# App title and introduction
+st.title("Clustering Global Development 🌍")
+st.write("""
+Discover development patterns across countries using KMeans clustering.  
+Analyze group-specific metrics and visualize trends dynamically!
 """)
 
-# Sidebar for filtering and inputs
-st.sidebar.header("Filter Options")
-show_raw_data = st.sidebar.checkbox("Show Raw Dataset", value=False)
-selected_metric = st.sidebar.selectbox(
-    "Choose a Metric for Detailed Analysis:",
-    df.columns,
-    help="Select a feature to view distribution and insights."
+# Sidebar filters
+st.sidebar.header("Explore Clusters")
+cluster_selection = st.sidebar.multiselect(
+    "Select Clusters to Explore:",
+    options=df['Cluster'].unique(),
+    default=df['Cluster'].unique(),
+    help="Select one or more clusters to focus on specific groups."
 )
 
-# Show raw data if selected
-if show_raw_data:
-    st.subheader("Raw Dataset")
+# Dataset preview toggle
+if st.sidebar.checkbox("Show Raw Data"):
+    st.subheader("Dataset Overview")
     st.dataframe(df)
 
-# Cluster selection for exploration
-cluster_options = list(range(len(set(kmeans.labels_))))
-selected_cluster = st.sidebar.selectbox("Select a Cluster to Analyze:", cluster_options)
+# Filter dataset based on selected clusters
+filtered_df = df[df['Cluster'].isin(cluster_selection)]
 
-# Display summary of the selected cluster
-st.subheader(f"Summary of Cluster {selected_cluster}")
-cluster_data = df[kmeans.labels_ == selected_cluster]
-st.write("### Statistical Overview")
-st.write(cluster_data.describe())
+# Key Metrics
+st.subheader("Key Metrics by Cluster")
+st.write("The following table summarizes key statistics for each selected cluster.")
+st.write(filtered_df.groupby('Cluster').mean().style.background_gradient(cmap="Blues"))
 
-# Visualize data distribution for the selected metric
-st.write(f"### Distribution of '{selected_metric}' Across Clusters")
-fig, ax = plt.subplots()
-sns.boxplot(x=kmeans.labels_, y=selected_metric, data=df, palette="coolwarm", ax=ax)
+# Scatterplot for cluster visualization
+st.subheader("Cluster Visualization")
+st.write("This scatterplot highlights the clustering of countries based on selected features.")
+
+# Dropdowns to select features for scatterplot
+feature_x = st.selectbox("Select X-Axis Feature", options=df.columns[:-1], index=0)
+feature_y = st.selectbox("Select Y-Axis Feature", options=df.columns[:-1], index=1)
+
+fig, ax = plt.subplots(figsize=(8, 5))
+sns.scatterplot(
+    x=filtered_df[feature_x],
+    y=filtered_df[feature_y],
+    hue=filtered_df['Cluster'],
+    palette="Set2",
+    s=50,
+    alpha=0.8,
+    ax=ax
+)
+ax.set_title("Scatterplot of Clusters")
+ax.set_xlabel(feature_x)
+ax.set_ylabel(feature_y)
+st.pyplot(fig)
+
+# Cluster-wise distribution plot
+st.subheader("Feature Distribution Across Clusters")
+selected_feature = st.selectbox(
+    "Choose a Feature to View Distribution:",
+    options=df.columns[:-1]
+)
+
+fig, ax = plt.subplots(figsize=(8, 5))
+sns.boxplot(
+    x='Cluster',
+    y=selected_feature,
+    data=filtered_df,
+    palette="coolwarm",
+    ax=ax
+)
+ax.set_title(f"Distribution of {selected_feature} by Cluster")
 ax.set_xlabel("Cluster")
-ax.set_ylabel(selected_metric)
-ax.set_title(f"Distribution of {selected_metric}")
+ax.set_ylabel(selected_feature)
 st.pyplot(fig)
 
-# Scatter plot to show clustering
-st.write("### Cluster Visualization")
-fig, ax = plt.subplots()
-palette = sns.color_palette("Set1", len(cluster_options))
-for cluster in cluster_options:
-    cluster_subset = df[kmeans.labels_ == cluster]
-    ax.scatter(
-        cluster_subset.iloc[:, 0], cluster_subset.iloc[:, 1],
-        label=f"Cluster {cluster}",
-        alpha=0.7,
-        s=50
-    )
-ax.set_title("Clustering of Countries")
-ax.set_xlabel("Feature 1: GDP")
-ax.set_ylabel("Feature 2: CO2 Emissions")
-ax.legend(title="Clusters")
-st.pyplot(fig)
-
-# Additional insights
-st.write("### Key Takeaways")
-cluster_insights = {
-    0: "Countries with advanced economies and high sustainability scores.",
-    1: "Emerging economies with steady progress in environmental reforms.",
-    2: "Developing nations with low industrialization but rising population growth.",
-    3: "Resource-rich nations with unique economic profiles.",
-    4: "Countries undergoing significant environmental challenges."
-}
-
-st.write(f"**Cluster {selected_cluster} Insights:** {cluster_insights.get(selected_cluster, 'No insights available')}")
+# Additional insights and takeaways
+st.subheader("Cluster Insights")
+for cluster in sorted(cluster_selection):
+    st.write(f"### Cluster {cluster}")
+    st.write("- **Key Observations**: Describe patterns for this cluster here.")
+    st.write("- **Suggestions**: Recommendations for countries in this cluster.")
 
 # Footer
-st.sidebar.markdown("---")
-st.sidebar.write("Developed by A Data Enthusiast 💡")
+st.sidebar.write("---")
+st.sidebar.write("App built for exploring global development trends.")
