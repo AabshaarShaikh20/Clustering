@@ -4,39 +4,52 @@ import pickle
 import matplotlib.pyplot as plt
 
 # Custom CSS for background and styling
-def add_background():
+def add_custom_styles():
     st.markdown(
-        f"""
+        """
         <style>
-        /* Background Image */
-        .stApp {{
-            background: url("https://thumbs.dreamstime.com/b/intersection-money-global-economy-shaping-financial-landscapes-worldwide-intersection-money-global-economy-292671686.jpg") no-repeat center center fixed; 
+        /* Full app background */
+        .stApp {
+            background: url("https://thumbs.dreamstime.com/b/intersection-money-global-economy-shaping-financial-landscapes-worldwide-intersection-money-global-economy-292671686.jpg") no-repeat center center fixed;
             background-size: cover;
-        }}
-        /* Styling for text */
-        h1, h2, h3 {{
+        }
+        /* Sidebar styling */
+        section[data-testid="stSidebar"] {
+            background: linear-gradient(135deg, #FFD700, #FFEC8B);
+            color: black;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        /* Sidebar text and headings */
+        section[data-testid="stSidebar"] h1, section[data-testid="stSidebar"] label {
+            color: black;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+        }
+        /* Main content text styling */
+        h1, h2, h3 {
             color: white;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-        }}
-        p, label {{
+        }
+        p, label {
             color: white;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
-        }}
-        ul {{
+        }
+        ul {
             padding-left: 20px;
-        }}
-        li {{
+        }
+        li {
             font-weight: bold;
             color: white;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
-        }}
+        }
         </style>
         """,
         unsafe_allow_html=True
     )
 
-# Apply the background CSS
-add_background()
+# Apply custom styles
+add_custom_styles()
 
 # Load the pre-trained KMeans model
 with open('./kmeans_model.pkl', 'rb') as f:
@@ -75,7 +88,7 @@ ax.set_ylabel('CO2 Emissions')
 ax.legend()
 st.pyplot(fig)
 
-# Display the Cluster Color Legend without textbox
+# Display the Cluster Color Legend
 st.markdown("### Cluster Color Legend")
 st.markdown("""
 - **Cluster 1 (Blue):** Strong economic development and high life expectancy  
