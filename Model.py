@@ -23,12 +23,26 @@ def add_background():
             color: #f0e2b6;  /* Soft yellow for body text */
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
         }}
-        /* Sidebar Styling */
-        .stSidebar {{
-            background-color: rgba(0, 0, 0, 0.7);
+        /* Table Background */
+        .dataframe {{
+            background-color: rgba(255, 255, 255, 0.1);  /* Slight transparency for the table background */
+            border-radius: 8px;
+            color: #f0e2b6;  /* Soft yellow text for table */
         }}
-        .css-1p1n3ar {{
-            color: white;
+        .dataframe thead {{
+            background-color: rgba(0, 0, 0, 0.7); /* Dark header background */
+            color: #d9e7e0;  /* Light teal text for header */
+        }}
+        .dataframe th, .dataframe td {{
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Light border for better separation */
+        }}
+        /* Graph Styling */
+        .stGraph {{
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for graph */
+        }}
+        .stPlot {{
+            background-color: rgba(0, 0, 0, 0.6); /* Darker plot background */
         }}
         </style>
         """,
