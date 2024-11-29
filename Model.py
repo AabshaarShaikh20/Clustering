@@ -13,15 +13,17 @@ def add_background():
             background: url("https://thumbs.dreamstime.com/b/intersection-money-global-economy-shaping-financial-landscapes-worldwide-intersection-money-global-economy-292671686.jpg") no-repeat center center fixed; 
             background-size: cover;
         }}
-        /* Text Styling */
+        /* Text Styling for Headings */
         h1, h2, h3, h4, h5, h6 {{
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            color: #d9e7e0;  /* Light teal shade for contrast */
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
         }}
+        /* Body Text Styling */
         p, label, .stMarkdown {{
-            color: white;
+            color: #f0e2b6;  /* Soft yellow for body text */
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
         }}
+        /* Sidebar Styling */
         .stSidebar {{
             background-color: rgba(0, 0, 0, 0.7);
         }}
