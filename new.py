@@ -15,7 +15,7 @@ df = pd.read_csv('./World_development_mesurement.csv')
 df = df.applymap(lambda x: str(x).replace('%', ''))
 df = df.apply(pd.to_numeric, errors='coerce')
 
-# Set background image using HTML, but this time more subtle with a cleaner layout
+# Set background image using HTML, keeping the layout simple
 st.markdown("""
     <style>
         .stApp {
@@ -54,12 +54,11 @@ st.markdown('<p class="header">Clustering App</p>', unsafe_allow_html=True)
 st.markdown('<p class="subheader">This app uses KMeans clustering to group countries based on their development metrics.</p>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Sidebar content with more control over the layout
+# Sidebar content with selection options
 st.sidebar.markdown('<div class="sidebar">', unsafe_allow_html=True)
 st.sidebar.write("Use the options below to filter and view the results.")
-
-# Cluster selection in the sidebar
 cluster = st.sidebar.selectbox('Select a cluster to view its characteristics:', range(5))
+st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
 # Display characteristics of the selected cluster in the main area
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
@@ -90,11 +89,3 @@ with plot_placeholder.container():
     st.pyplot(fig)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Explanation for the cluster colors on the sidebar
-st.sidebar.markdown('<p class="subheader">Cluster Color Legend:</p>', unsafe_allow_html=True)
-st.sidebar.write('* Cluster 0 (Blue): Strong economic development and high life expectancy')
-st.sidebar.write('* Cluster 1 (Orange): Moderate economic development and medium life expectancy')
-st.sidebar.write('* Cluster 2 (Green): Weak economic development and low life expectancy')
-st.sidebar.write('* Cluster 3 (Red): Unique development profiles')
-st.sidebar.write('* Cluster 4 (Purple): Other development profiles')
-st.sidebar.markdown('</div>', unsafe_allow_html=True)
